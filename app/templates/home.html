@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SFO Flight Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .nav-links a {
+            margin-right: 2em;
+            text-decoration: none;
+            font-size: 1.3em;
+            padding: 0.5em 1em;
+            color: #0074d9;
+            border: 1px solid #0074d9;
+            border-radius: 5px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-links a:hover { 
+            background: #0074d9;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>San Francisco International Airport (SFO)</h1>
+    <div class="nav-links">
+        <a href="/api/arrivals">Arrivals</a>
+        <a href="/api/departures">Departures</a>
+    </div>
+    <p>Welcome to the SFO Flight Dashboard.<br>
+    Use the links above to view current arrivals and departures (data updates every ~60 seconds).</p>
+</body>
+</html>
