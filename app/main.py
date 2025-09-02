@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 from flask import jsonify
 from flask import request
-from database import init_db, get_session, Arrival, Departure
 import requests
 
 app = Flask(__name__)
@@ -9,41 +8,6 @@ app = Flask(__name__)
 @app.route('/')
 def home():
     return render_template('home.html')
-
-@app.route('/api/arrivals')
-def api_arrivals():
-    session = get_session()
-    flights = session.query(Arrival).order_by(Arrival.scheduled_time).all()
-    session.close()
-    # Convert SQLAlchemy objects to dictionaries
-    result = [dict(
-        id=f.id,
-        airline=f.airline,
-        flight=f.flight,
-        origin=f.origin,
-        status=f.status,
-        scheduled_time=f.scheduled_time,
-        actual_time=f.actual_time,
-        gate=f.gate
-    ) for f in flights]
-    return jsonify(result)
-
-@app.route('/api/departures')
-def api_departures():
-    session = get_session()
-    flights = session.query(Departure).order_by(Departure.scheduled_time).all()
-    session.close()
-    result = [dict(
-        id=f.id,
-        airline=f.airline,
-        flight=f.flight,
-        origin=f.origin,
-        status=f.status,
-        scheduled_time=f.scheduled_time,
-        actual_time=f.actual_time,
-        gate=f.gate
-    ) for f in flights]
-    return jsonify(result)
 
 @app.route('/api/aircraft_lookup', methods=['GET'])
 def aircraft_lookup():
@@ -74,5 +38,4 @@ def aircraft_lookup():
 
 
 if __name__ == "__main__":
-    init_db()  # Create tables if not present
     app.run(debug=True)
