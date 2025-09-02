@@ -7,7 +7,9 @@ export default function Home() {
       <h1>San Francisco International Airport Flight Dashboard</h1>
       <nav style={{ marginBottom: '20px' }}>
         <Link to="/arrivals" style={{ marginRight: '15px' }}>Arrivals</Link>
-        <Link to="/departures">Departures</Link>
+        <Link to="/departures" style={{ marginRight: '15px' }}>Departures</Link>
+        <Link to="/lookup">Aircraft Lookup</Link>
+
       </nav>
       <p>
         Welcome to the flight dashboard. Select Arrivals or Departures to view current flight information.

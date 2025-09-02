@@ -1,37 +1,14 @@
 from flask import Flask, render_template
 from flask import jsonify
+from flask import request
 from database import init_db, get_session, Arrival, Departure
-from data_scraper import scrape_sfo_arrivals, scrape_sfo_departures
-import threading
-import time
-import os
+import requests
 
 app = Flask(__name__)
-
-def update_cache_periodically():
-    while True:
-        scrape_sfo_arrivals()
-        scrape_sfo_departures()
-        print("--------------------Database updated--------------------")
-        time.sleep(60)
 
 @app.route('/')
 def home():
     return render_template('home.html')
-
-# @app.route('/arrivals')
-# def arrivals():
-#     session = get_session()
-#     flights = session.query(Arrival).order_by(Arrival.scheduled_time).all()
-#     session.close()
-#     return render_template('index.html', flights=flights, label="Arrivals")
-
-# @app.route('/departures')
-# def departures():
-#     session = get_session()
-#     flights = session.query(Departure).order_by(Departure.scheduled_time).all()
-#     session.close()
-#     return render_template('index.html', flights=flights, label="Departures")
 
 @app.route('/api/arrivals')
 def api_arrivals():
@@ -68,10 +45,34 @@ def api_departures():
     ) for f in flights]
     return jsonify(result)
 
+@app.route('/api/aircraft_lookup', methods=['GET'])
+def aircraft_lookup():
+    """Lookup aircraft or route by registration or callsign."""
+    reg = request.args.get('registration', '').strip().upper()
+    callsign = request.args.get('callsign', '').strip().upper()
+    result = {}
+
+    if reg:
+        adsbdb_url = f"https://api.adsbdb.com/v0/aircraft/{reg}"
+    elif callsign:
+        adsbdb_url = f"https://api.adsbdb.com/v0/callsign/{callsign}"
+    else:
+        return jsonify({"error": "No registration or callsign provided."}), 400
+
+    try:
+        r = requests.get(adsbdb_url)
+        r.raise_for_status()
+        result = r.json()
+    except Exception as e:
+        return jsonify({"error": "Lookup failed", "details": str(e)}), 500
+
+    return jsonify(result)
+
+
+
+
 
 
 if __name__ == "__main__":
     init_db()  # Create tables if not present
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
-        threading.Thread(target=update_cache_periodically, daemon=True).start()
     app.run(debug=True)
