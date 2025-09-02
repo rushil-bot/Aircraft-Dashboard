@@ -19,13 +19,13 @@ dist/
 *.egg-info/
 
 # React build artifacts
-sfo-dashboard-frontend/build/
-sfo-dashboard-frontend/README.md
-sfo-dashboard-frontend/package.json
-sfo-dashboard-frontend/package-lock.json
-sfo-dashboard-frontend/yarn.lock
-sfo-dashboard-frontend/yarn-error.log
-sfo-dashboard-frontend/.env
+aircraft-app-frontend/build/
+aircraft-app-frontend/README.md
+aircraft-app-frontend/package.json
+aircraft-app-frontend/package-lock.json
+aircraft-app-frontend/yarn.lock
+aircraft-app-frontend/yarn-error.log
+aircraft-app-frontend/.env
 
 # IDE/editor files
 .vscode/
