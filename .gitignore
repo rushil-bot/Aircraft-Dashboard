@@ -19,7 +19,6 @@ dist/
 *.egg-info/
 
 # React build artifacts
-sfo-dashboard-frontend/build/
 
 # IDE/editor files
 .vscode/
