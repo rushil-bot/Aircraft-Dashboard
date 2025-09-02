@@ -26,6 +26,7 @@ def scrape_sfo_arrivals():
     print("--------------------Scraping SFO arrivals...--------------------")
 
 
+    #Start Scraping
     rows = driver.find_elements(By.CSS_SELECTOR, "tr")
 
     for row in rows:
