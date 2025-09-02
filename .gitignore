@@ -25,3 +25,4 @@ sfo-dashboard-frontend/build/
 .vscode/
 .idea/
 .DS_Store
+temp/
