@@ -29,21 +29,25 @@ export default function AircraftLookup() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
 
-  const addToHistory = (queryTerm) => {
+  const addToHistory = (queryTerm, searchMode) => {
     setHistory((prev) => {
-      if (prev.includes(queryTerm)) return prev;
-      return [queryTerm, ...prev].slice(0, 5); // max 5 items
+      // Don't duplicate same search/mode combo
+      if (prev.find(item => item.value === queryTerm && item.mode === searchMode)) return prev;
+      return [{ value: queryTerm, mode: searchMode }, ...prev].slice(0, 5);
     });
   };
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
+
+  const handleSearch = async (e, customQuery, customMode) => {
+    if (e) e.preventDefault();
     setError('');
     setResult(null);
     setLoading(true);
 
     try {
-      const url = `/api/aircraft_lookup?${mode}=${encodeURIComponent(query)}`;
+      const activeQuery = customQuery !== undefined ? customQuery : query;
+      const activeMode = customMode !== undefined ? customMode : mode;
+      const url = `/api/aircraft_lookup?${activeMode}=${encodeURIComponent(activeQuery)}`;
       const res = await fetch(url);
       const data = await res.json();
 
@@ -51,13 +55,15 @@ export default function AircraftLookup() {
         setError(data.error);
       } else {
         setResult(data.response || data);
-        addToHistory(query);
+        addToHistory(activeQuery, activeMode);
       }
     } catch {
       setError('Lookup failed. Please try again.');
     }
     setLoading(false);
   };
+
+
 
   return (
     <>
@@ -116,18 +122,23 @@ export default function AircraftLookup() {
         {history.length > 0 && (
           <Box sx={{ mt: 3 }}>
             <Typography variant="subtitle1">Recent Searches:</Typography>
-            {history.map((item) => (
+            {history.map((item, idx) => (
               <Button
-                key={item}
+                key={item.value + item.mode + idx}
                 variant="outlined"
                 sx={{ m: '0.25rem' }}
-                onClick={() => setQuery(item)}
+                onClick={async () => {
+                  setQuery(item.value);
+                  setMode(item.mode);
+                  setTimeout(() => handleSearch(null, item.value, item.mode), 0);
+                }}
               >
-                {item}
+                {item.mode === "registration" ? "Reg:" : "Call:"} {item.value}
               </Button>
             ))}
           </Box>
         )}
+
 
         {/*Loading spinner */}
         {loading && (

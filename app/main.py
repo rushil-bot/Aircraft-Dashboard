@@ -32,6 +32,8 @@ def aircraft_lookup():
         cached_time, cached_data = cache[key]
         if now - cached_time < CACHE_TTL:
             return jsonify(cached_data)
+        else:
+            cache.clear()
 
     # Not cached or expired, fetch fresh data
     try:
