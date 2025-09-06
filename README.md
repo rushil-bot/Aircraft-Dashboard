@@ -57,7 +57,7 @@ python main.py
 
 ### Frontend Setup
 
-1. Navigate to the frontend folder.
+1. Navigate to the frontend folder (```\aircraft-app-frontend\```).
 
 2. Install dependencies:
 
