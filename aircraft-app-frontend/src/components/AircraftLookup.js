@@ -16,10 +16,19 @@ import {
   Alert,
   Box,
   AppBar,
-  Toolbar,
-  ImageList,
-  ImageListItem
+  Toolbar
+  // ImageList,
+  // ImageListItem
 } from '@mui/material';
+import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
+import L from 'leaflet';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 export default function AircraftLookup() {
   const [query, setQuery] = useState('');
@@ -157,9 +166,10 @@ export default function AircraftLookup() {
                 <>
                   <Typography variant="h6">Aircraft Info:</Typography>
                   <Typography>Registration: {result.aircraft.registration}</Typography>
+                  <Typography>Type: {result.aircraft.type}</Typography>
                   <Typography>ICAO Type: {result.aircraft.icao_type}</Typography>
                   <Typography>Manufacturer: {result.aircraft.manufacturer}</Typography>
-                  <Typography>Country: {result.aircraft.registered_owner_country}</Typography>
+                  <Typography>Country: {result.aircraft.registered_owner_country_name}</Typography>
                   <Typography>Owner: {result.aircraft.registered_owner}</Typography>
                 </>
               )}
@@ -187,7 +197,7 @@ export default function AircraftLookup() {
                 alt="Aircraft"
               />
             )}
-            {result.aircraft && result.aircraft.photos && result.aircraft.photos.length > 0 ? (
+            {/* {result.aircraft && result.aircraft.photos && result.aircraft.photos.length > 0 ? (
               <ImageList rowHeight={160} cols={3}>
                 {result.aircraft.photos.map((photoUrl, index) => (
                   <ImageListItem key={index}>
@@ -206,7 +216,37 @@ export default function AircraftLookup() {
                 alt="Aircraft"
                 style={{ maxWidth: '100%', maxHeight: 200, borderRadius: 8, marginTop: 10 }}
               />
-            ) : null}
+            ) : null} */}
+            {result?.flightroute && result.flightroute.origin && result.flightroute.destination && (
+            <Box mt={4} sx={{ height: 400 }}>
+              <MapContainer
+                center={[
+                  (result.flightroute.origin.latitude + result.flightroute.destination.latitude) / 2,
+                  (result.flightroute.origin.longitude + result.flightroute.destination.longitude) / 2,
+                ]}
+                zoom={2}
+                scrollWheelZoom={false}
+                style={{ height: "100%", width: "100%" }}
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={[result.flightroute.origin.latitude, result.flightroute.origin.longitude]}>
+                  <Popup>
+                    Origin: {result.flightroute.origin.name} ({result.flightroute.origin.iata_code})
+                  </Popup>
+                </Marker>
+                <Marker position={[result.flightroute.destination.latitude, result.flightroute.destination.longitude]}>
+                  <Popup>
+                    Destination: {result.flightroute.destination.name} ({result.flightroute.destination.iata_code})
+                  </Popup>
+                </Marker>
+                <Polyline positions={[
+                  [result.flightroute.origin.latitude, result.flightroute.origin.longitude],
+                  [result.flightroute.destination.latitude, result.flightroute.destination.longitude]
+                ]} color="blue" />
+              </MapContainer>
+            </Box>
+          )}
+
           </Card>
         )}
         <Typography variant="caption" display="block" mt={3} textAlign="center" color="text.secondary">

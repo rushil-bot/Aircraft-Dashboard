@@ -44,7 +44,7 @@ export default function Home() {
             marginBottom: "1rem"
           }}
         >
-          Welcome to the Aircraft Lookup Tool! A Personal project of Mine!
+          Welcome to the Aviation Lookup Tool! A Personal project of Mine!
         </h2>
         <p
           style={{
@@ -54,12 +54,17 @@ export default function Home() {
             color: "#333"
           }}
         >
-          Experience aircraft details with our interactive lookup tool.
+          Experience aviation details with our interactive lookup tool.
         </p>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "2rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "2rem",marginBottom: "1rem" }}>
           <Link to="/lookup" style={buttonStyle}>
             Aircraft Lookup
+          </Link>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: "2rem",marginBottom: "1rem" }}>
+          <Link to="/airport" style={buttonStyle}>
+            Airport Lookup
           </Link>
         </div>
       </main>

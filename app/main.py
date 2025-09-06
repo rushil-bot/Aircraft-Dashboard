@@ -41,6 +41,40 @@ def aircraft_lookup():
         r.raise_for_status()
         data = r.json()
         cache[key] = (now, data)
+        print(data)
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": "Lookup failed", "details": str(e)}), 500
+
+
+@app.route("/api/airport_lookup", methods=["GET"])
+def airport_lookup():
+    code = request.args.get("code", "").strip().upper()
+    if not code:
+        return jsonify({"error": "No airport code provided."}), 400
+
+    if len(code) == 4:
+        key = f"icao:{code}"
+        url = f"https://airport-data.com/api/ap_info.json?icao={code}"
+    elif len(code) == 3:
+        key = f"iata:{code}"
+        url = f"https://airport-data.com/api/ap_info.json?iata={code}"
+    else:
+        return jsonify({"error": "No registration or callsign provided."}), 400
+    
+    now = time.time()
+    if key in cache:
+        cached_time, cached_data = cache[key]
+        if now - cached_time < CACHE_TTL:
+            return jsonify(cached_data)
+        else:
+            cache.clear()
+
+    try:
+        r = requests.get(url)
+        r.raise_for_status()
+        data = r.json()
+        cache[key] = (now, data)
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": "Lookup failed", "details": str(e)}), 500
