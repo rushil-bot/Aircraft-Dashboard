@@ -1,6 +1,6 @@
 # Aircraft Lookup Dashboard
 
-Welcome to the **Aviation Lookup Dashboard** — your personal gateway to exploring the fascinating world of aircraft and Airport data! This app lets you quickly search for any plane or Airport by registration number or callsign, and see detailed info, recent routes, and stunning photos — all powered by the awesome [ADSBdb API](https://www.adsbdb.com) and [Airport-Data API](https://www.airport-data.com).
+Welcome to the **Aviation Lookup Dashboard** — your personal gateway to exploring the fascinating world of aircraft and Airport data! This app lets you quickly search for any plane or Airport by registration number or callsign, and see detailed info, recent routes, and stunning photos — all powered by the awesome [ADSBdb API](https://www.adsbdb.com) and [Airport-Data API](https://airport-data.com/).
 
 ---
 
@@ -89,7 +89,7 @@ npm start
 
 ## 🙏 Credits & Thanks
 
-- This project taps into the incredible **[ADSBdb API](https://www.adsbdb.com)**  and **[Airport-Data API](https://www.airport-data.com)** — free and open aircraft data for the aviation lover in all of us.
+- This project taps into the incredible **[ADSBdb API](https://www.adsbdb.com)**  and **[Airport-Data API](https://airport-data.com/)** — free and open aircraft data for the aviation lover in all of us.
 - Built with ❤️ using **React**, **Material-UI**, and **Flask**.
 - Inspired by endless plane-spotting sessions and late-night coding marathons.
 
