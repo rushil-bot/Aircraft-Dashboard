@@ -31,14 +31,8 @@ temp/
 # Docker
 docker-compose.override.yml
 
-# AI model artifacts (too large for git)
-agents/*/model/*.joblib
-agents/*/model/*.onnx
-agents/*/model/*.pt
-agents/*/model/*.bin
-
 # Training data
-data/raw/
+data/
 
 # Virtual environments
 venv/
