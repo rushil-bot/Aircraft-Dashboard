@@ -1,0 +1,120 @@
+# ============================================================
+# Aircraft Dashboard — Docker Compose
+# ============================================================
+# Usage:
+#   docker-compose up --build        # build & start all services
+#   docker-compose up -d             # start in background
+#   docker-compose down              # stop all services
+#   docker-compose logs -f gateway   # follow logs for a service
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # Frontend — React app served by Nginx
+  # ----------------------------------------------------------
+  frontend:
+    build:
+      context: ./aircraft-app-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      gateway:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # API Gateway — FastAPI (replaces legacy Flask backend)
+  # ----------------------------------------------------------
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # Redis — Caching layer
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # PostgreSQL — Persistent data store (for future AI agents)
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    # No host port needed — other containers reach it via postgres:5432 on the Docker network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # ----------------------------------------------------------
+  # Future AI Agent services will be added here:
+  #
+  # delay-predictor:
+  #   build: ./agents/delay-predictor
+  #   ports: ["8001:8001"]
+  #
+  # image-classifier:
+  #   build: ./agents/image-classifier
+  #   ports: ["8002:8002"]
+  #
+  # nl-query:
+  #   build: ./agents/nl-query
+  #   ports: ["8003:8003"]
+  #
+  # route-recommender:
+  #   build: ./agents/route-recommender
+  #   ports: ["8004:8004"]
+  # ----------------------------------------------------------
+
+# Named volumes
+volumes:
+  postgres-data:
+
+# Shared network
+networks:
+  app-network:
+    driver: bridge
