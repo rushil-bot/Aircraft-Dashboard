@@ -1,13 +1,19 @@
+"""System health check endpoints."""
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 from gateway.utils.cache import cache
 
 router = APIRouter(tags=["System"])
 
+
 class HealthResponse(BaseModel):
+    """Schema for health check response."""
+
     status: str
     version: str
     cache: str
+
 
 @router.get("/health", response_model=HealthResponse)
 async def health_check():
