@@ -20,11 +20,6 @@ dist/
 
 # React build artifacts
 aircraft-app-frontend/build/
-aircraft-app-frontend/README.md
-aircraft-app-frontend/package.json
-aircraft-app-frontend/package-lock.json
-aircraft-app-frontend/yarn.lock
-aircraft-app-frontend/yarn-error.log
 aircraft-app-frontend/.env
 
 # IDE/editor files
@@ -32,3 +27,13 @@ aircraft-app-frontend/.env
 .idea/
 .DS_Store
 temp/
+
+# Docker
+docker-compose.override.yml
+
+# Training data
+data/
+
+# Virtual environments
+venv/
+.venv/

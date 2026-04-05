@@ -19,24 +19,43 @@ export default function AirportLookup() {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!code) {
+    const trimmed = code.trim().toUpperCase();
+
+    if (!trimmed) {
       setError("Please enter an airport ICAO or IATA code.");
       return;
     }
+
+    if (trimmed.length < 3 || trimmed.length > 4) {
+      setError(
+        `Airport codes must be 3 letters (IATA, e.g. "LAX") or 4 letters (ICAO, e.g. "KLAX"). ` +
+        `You entered "${trimmed}" (${trimmed.length} characters).`
+      );
+      return;
+    }
+
     setError("");
     setResult(null);
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/airport_lookup?code=${encodeURIComponent(code.toUpperCase())}`);
+      const res = await fetch(`/api/airport_lookup?code=${encodeURIComponent(trimmed)}`);
       const data = await res.json();
-      if (data.error) {
+
+      if (!res.ok) {
+        setError(data.detail || data.error || `Server error (${res.status}). Please try again.`);
+      } else if (data.error) {
         setError(data.error);
+      } else if (!data.name && !data.icao && !data.iata) {
+        setError(
+          `No airport found for code "${trimmed}". ` +
+          `Make sure you're using a valid IATA code (e.g. "SFO") or ICAO code (e.g. "KSFO").`
+        );
       } else {
         setResult(data.response || data);
       }
     } catch {
-      setError("Failed to fetch airport data.");
+      setError("Could not reach the server. Please check your connection and try again.");
     }
     setLoading(false);
   };

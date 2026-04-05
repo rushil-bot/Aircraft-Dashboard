@@ -1,0 +1,10 @@
+[
+  "Month",
+  "DayOfWeek",
+  "dep_hour",
+  "is_weekend",
+  "Reporting_Airline",
+  "Origin",
+  "Dest",
+  "Distance"
+]

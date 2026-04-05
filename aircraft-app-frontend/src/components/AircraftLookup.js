@@ -51,24 +51,45 @@ export default function AircraftLookup() {
     if (e) e.preventDefault();
     setError('');
     setResult(null);
+
+    const activeQuery = customQuery !== undefined ? customQuery : query;
+    const activeMode = customMode !== undefined ? customMode : mode;
+
+    // Validate input before calling the API
+    if (!activeQuery.trim()) {
+      setError('Please enter a search value.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const activeQuery = customQuery !== undefined ? customQuery : query;
-      const activeMode = customMode !== undefined ? customMode : mode;
       const url = `/api/aircraft_lookup?${activeMode}=${encodeURIComponent(activeQuery)}`;
       const res = await fetch(url);
       const data = await res.json();
 
-      if (data.error) {
+      if (!res.ok) {
+        // HTTP error from the gateway
+        setError(data.detail || data.error || `Server error (${res.status}). Please try again.`);
+      } else if (data.response && data.response.aircraft === null && activeMode === 'callsign') {
+        // ADSBdb returns {response: {aircraft: null}} for unknown callsigns
+        setError(
+          `No aircraft found for callsign "${activeQuery}". ` +
+          `Did you mean to search by Registration instead?`
+        );
+      } else if (data.response && data.response.aircraft === null) {
+        setError(
+          `No aircraft found for registration "${activeQuery}". ` +
+          `Double-check the registration number (e.g. N787UA) or try a callsign search.`
+        );
+      } else if (data.error) {
         setError(data.error);
-        console.log(data.error);
       } else {
         setResult(data.response || data);
         addToHistory(activeQuery, activeMode);
       }
     } catch {
-      setError('Lookup failed. Please try again.');
+      setError('Could not reach the server. Please check your connection and try again.');
     }
     setLoading(false);
   };
