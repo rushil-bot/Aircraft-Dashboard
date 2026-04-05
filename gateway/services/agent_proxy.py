@@ -1,10 +1,14 @@
+"""Service for proxying requests to internal AI Agents."""
+
 import logging
 import httpx
 from fastapi import HTTPException
-from gateway.utils.http import HTTPClient
+from gateway.utils.http_client import HTTPClient
 
 logger = logging.getLogger("gateway.services.agents")
 
+
+# pylint: disable=too-few-public-methods
 class AgentProxyService:
     """
     Handles proxying requests to internal AI Agent microservices.
@@ -18,17 +22,21 @@ class AgentProxyService:
         try:
             client = HTTPClient.get_client()
             r = await client.post(agent_url, json=payload)
-            
+
             # Pass through 4xx errors gracefully
             if r.status_code >= 400:
-                detail = r.json() if r.headers.get("content-type") == "application/json" else r.text
+                detail = (
+                    r.json()
+                    if r.headers.get("content-type") == "application/json"
+                    else r.text
+                )
                 raise HTTPException(status_code=r.status_code, detail=detail)
-                
+
             return r.json()
-            
+
         except httpx.RequestError as e:
-            logger.error(f"Failed to connect to AI Agent at {agent_url}: {e}")
+            logger.error("Failed to connect to AI Agent at %s: %s", agent_url, e)
             raise HTTPException(
-                status_code=503, 
-                detail="The requested AI Agent service is currently unavailable. Ensure the container is running."
-            )
+                status_code=503,
+                detail="The requested AI Agent service is currently unavailable.",
+            ) from e

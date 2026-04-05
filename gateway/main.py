@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from gateway.utils.http import HTTPClient
+from gateway.utils.http_client import HTTPClient
 from gateway.utils.cache import cache
 
 from gateway.routers import health, lookups, agents
@@ -32,23 +32,26 @@ logging.basicConfig(
 )
 logger = logging.getLogger("gateway.main")
 
+
 # ---------------------------------------------------------------------------
 # Application lifecycle
 # ---------------------------------------------------------------------------
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_app: FastAPI):
+    """Lifespan manager to setup and teardown global connections."""
     # Setup global clients
     await cache.connect()
     HTTPClient.get_client()
-    
-    logger.info("🚀 Gateway started successfully")
+
+    logger.info("[PASS] Gateway started successfully")
     yield
-    
+
     # Teardown global clients
     await cache.close()
     await HTTPClient.close()
-    
-    logger.info("👋 Gateway shutting down")
+
+    logger.info("[INFO] Gateway shutting down")
+
 
 # ---------------------------------------------------------------------------
 # FastAPI app initialization
@@ -75,4 +78,5 @@ app.include_router(agents.router)
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("gateway.main:app", host="0.0.0.0", port=8000, reload=True)

@@ -1,8 +1,11 @@
+"""AI Agent proxy endpoints."""
+
 import os
 from fastapi import APIRouter
 from gateway.services.agent_proxy import AgentProxyService
 
 router = APIRouter(tags=["AI Agents"], prefix="/api/agents")
+
 
 @router.post("/delay-predictor/predict")
 async def proxy_delay_predictor(req_body: dict):
@@ -12,5 +15,4 @@ async def proxy_delay_predictor(req_body: dict):
     # Default to localhost if running outside docker
     agent_host = os.environ.get("DELAY_PREDICTOR_HOST", "delay-predictor")
     url = f"http://{agent_host}:8001/predict"
-    
     return await AgentProxyService.request_agent(url, req_body)

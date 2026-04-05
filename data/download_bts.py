@@ -16,7 +16,6 @@ Usage:
 
 import argparse
 import io
-import os
 import sys
 import zipfile
 from datetime import datetime, timedelta
@@ -73,11 +72,11 @@ def download_month(year: int, month: int) -> Path | None:
     csv_path = RAW_DIR / f"bts_{year}_{month:02d}.csv"
 
     if csv_path.exists():
-        print(f"  ✓ Already downloaded: {csv_path.name}")
+        print(f"  [PASS] Already downloaded: {csv_path.name}")
         return csv_path
 
     url = BTS_URL_TEMPLATE.format(year=year, month=month)
-    print(f"  ↓ Downloading {year}-{month:02d}... ", end="", flush=True)
+    print(f"  [DOWNLOADING] {year}-{month:02d}... ", end="", flush=True)
 
     try:
         resp = requests.get(url, timeout=60)
@@ -101,7 +100,7 @@ def download_month(year: int, month: int) -> Path | None:
                 df.to_csv(csv_path, index=False)
                 print(f"OK ({len(df):,} flights)")
                 return csv_path
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         print(f"FAILED ({e})")
         return None
 
@@ -112,14 +111,14 @@ def download_range(year: int = None, months: int = 3) -> list[Path]:
 
     if year:
         # Download all 12 months of a specific year
-        print(f"\n📥 Downloading all of {year}...")
+        print(f"\n[INFO] Downloading all of {year}...")
         for m in range(1, 13):
             path = download_month(year, m)
             if path:
                 downloaded.append(path)
     else:
         # Download the latest N months
-        print(f"\n📥 Downloading latest {months} months...")
+        print(f"\n[INFO] Downloading latest {months} months...")
         now = datetime.now()
         # BTS data has ~2-month lag, so start 3 months back
         start = now - timedelta(days=90 + (months * 30))
@@ -130,7 +129,7 @@ def download_range(year: int = None, months: int = 3) -> list[Path]:
                 downloaded.append(path)
 
     if not downloaded:
-        print("\n⚠️  No data downloaded. See manual download instructions below.")
+        print("\n[WARN] No data downloaded. See manual download instructions below.")
         print_manual_instructions()
 
     return downloaded
@@ -186,18 +185,18 @@ def preprocess(raw_files: list[Path] = None) -> Path:
         raw_files = sorted(RAW_DIR.glob("bts_*.csv"))
 
     if not raw_files:
-        print("❌ No raw data files found in data/raw/")
+        print("[FAIL] No raw data files found in data/raw/")
         print("   Run the download first, or place CSV files manually.")
         sys.exit(1)
 
-    print(f"\n🔧 Preprocessing {len(raw_files)} file(s)...")
+    print(f"\n[INFO] Preprocessing {len(raw_files)} file(s)...")
 
     # Load and concatenate all raw files
     dfs = []
     for f in raw_files:
         df = pd.read_csv(f, low_memory=False)
         dfs.append(df)
-        print(f"  ✓ Loaded {f.name}: {len(df):,} rows")
+        print(f"  [PASS] Loaded {f.name}: {len(df):,} rows")
 
     df = pd.concat(dfs, ignore_index=True)
     print(f"\n  Total raw rows: {len(df):,}")
@@ -255,14 +254,14 @@ def preprocess(raw_files: list[Path] = None) -> Path:
     output_path = PROCESSED_DIR / "flights_processed.csv"
     df_final.to_csv(output_path, index=False)
 
-    print(f"\n✅ Processed dataset saved to: {output_path}")
+    print(f"\n[PASS] Processed dataset saved to: {output_path}")
     print(f"   Rows: {len(df_final):,}")
     print(f"   Columns: {list(df_final.columns)}")
 
     # --- Quick stats ---
     delay_rate = df_final["delayed_15"].mean() * 100
     avg_delay = df_final["delay_minutes"].mean()
-    print(f"\n📊 Dataset Statistics:")
+    print("\n[INFO] Dataset Statistics:")
     print(f"   Delay rate (≥15 min): {delay_rate:.1f}%")
     print(f"   Average delay: {avg_delay:.1f} minutes")
     print(f"   Top carriers: {df_final['Reporting_Airline'].value_counts().head(5).to_dict()}")
@@ -275,6 +274,7 @@ def preprocess(raw_files: list[Path] = None) -> Path:
 # Main
 # ---------------------------------------------------------------------------
 def main():
+    """Main execution entry point."""
     parser = argparse.ArgumentParser(
         description="Download and preprocess BTS flight delay data"
     )
@@ -296,7 +296,7 @@ def main():
         downloaded = download_range(year=args.year, months=args.months)
         if not downloaded:
             return
-    
+
     preprocess()
 
 
