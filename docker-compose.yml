@@ -92,11 +92,16 @@ services:
 
   # ----------------------------------------------------------
   # Future AI Agent services will be added here:
-  #
-  # delay-predictor:
-  #   build: ./agents/delay-predictor
-  #   ports: ["8001:8001"]
-  #
+  # ----------------------------------------------------------
+  delay-predictor:
+    build:
+      context: ./agents/delay-predictor
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    networks:
+      - app-network
+    restart: unless-stopped
   # image-classifier:
   #   build: ./agents/image-classifier
   #   ports: ["8002:8002"]

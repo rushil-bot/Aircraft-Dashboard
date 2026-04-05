@@ -6,6 +6,7 @@ import Home from './components/Home';
 import Departures from './components/Departures'; */
 import AircraftLookup from './components/AircraftLookup';
 import AirportLookup from './components/AirportLookup';
+import DelayPredictor from './components/DelayPredictor';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/departures" element={<Departures />} />  NOT IN USE*/}
         <Route path="/lookup" element={<AircraftLookup />} />
         <Route path="/airport" element={<AirportLookup />} />
+        <Route path="/delay" element={<DelayPredictor />} />
         
       </Routes>
     </Router>

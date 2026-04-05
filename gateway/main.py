@@ -267,9 +267,36 @@ async def airport_lookup(
 
 
 # ---------------------------------------------------------------------------
-# Future: AI Agent proxy routes will be added here
-# e.g. /api/agents/delay-predictor/predict → delay-predictor:8001/predict
+# AI Agent Proxy Routes
 # ---------------------------------------------------------------------------
+
+@app.post("/api/agents/delay-predictor/predict", tags=["AI Agents"])
+async def proxy_delay_predictor(req_body: dict):
+    """
+    Proxy request to the internal delay-predictor microservice.
+    """
+    import os
+    
+    # Internal service URL (docker-compose hostname)
+    # Default to localhost if running outside docker
+    agent_host = os.environ.get("DELAY_PREDICTOR_HOST", "delay-predictor")
+    url = f"http://{agent_host}:8001/predict"
+
+    try:
+        client = _get_http_client()
+        r = await client.post(url, json=req_body)
+        
+        # If the internal service throws a 422 or 400, pass it back transparently
+        if r.status_code >= 400:
+            raise HTTPException(status_code=r.status_code, detail=r.json())
+            
+        return r.json()
+    except httpx.RequestError as e:
+        logger.error(f"Failed to connect to delay-predictor: {e}")
+        raise HTTPException(
+            status_code=503, 
+            detail="Delay predictor service is currently unavailable. Ensure the container is running."
+        )
 
 
 if __name__ == "__main__":

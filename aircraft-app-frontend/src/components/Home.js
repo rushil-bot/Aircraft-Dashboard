@@ -24,6 +24,9 @@ export default function Home() {
           <Link to="/lookup" style={navLinkStyle}>
             Aircraft Lookup
           </Link>
+          <Link to="/delay" style={{...navLinkStyle, color: "#70B5F9"}}>
+            Delay Predictor ✈️
+          </Link>
         </div>
       </nav>
 
@@ -65,6 +68,11 @@ export default function Home() {
         <div style={{ display: "flex", justifyContent: "center", gap: "2rem",marginBottom: "1rem" }}>
           <Link to="/airport" style={buttonStyle}>
             Airport Lookup
+          </Link>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: "2rem",marginBottom: "1rem", marginTop: "2rem" }}>
+          <Link to="/delay" style={{...buttonStyle, backgroundColor: "#00326B"}}>
+            🤖 AI Delay Predictor
           </Link>
         </div>
       </main>
