@@ -3,7 +3,7 @@
 import logging
 import httpx
 from fastapi import HTTPException
-from gateway.utils.http import HTTPClient
+from gateway.utils.http_client import HTTPClient
 
 logger = logging.getLogger("gateway.services.agents")
 

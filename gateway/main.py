@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from gateway.utils.http import HTTPClient
+from gateway.utils.http_client import HTTPClient
 from gateway.utils.cache import cache
 
 from gateway.routers import health, lookups, agents
