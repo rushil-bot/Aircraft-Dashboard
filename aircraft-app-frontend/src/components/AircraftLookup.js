@@ -32,7 +32,7 @@ L.Icon.Default.mergeOptions({
 
 export default function AircraftLookup() {
   const [query, setQuery] = useState('');
-  const [mode, setMode] = useState('registration');
+  const [mode, setMode] = useState('callsign');
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,6 +62,7 @@ export default function AircraftLookup() {
 
       if (data.error) {
         setError(data.error);
+        console.log(data.error);
       } else {
         setResult(data.response || data);
         addToHistory(activeQuery, activeMode);
@@ -107,15 +108,16 @@ export default function AircraftLookup() {
               label="Search Mode"
               onChange={(e) => setMode(e.target.value)}
             >
-              <MenuItem value="registration">Registration / Mode-S</MenuItem>
-              <MenuItem value="callsign">Callsign</MenuItem>
+                <MenuItem value="callsign">Callsign</MenuItem>
+                <MenuItem value="registration">Registration / Mode-S</MenuItem>
+              
             </Select>
           </FormControl>
 
           <TextField
             fullWidth
             required
-            label={mode === 'registration' ? 'Enter Registration or Hex' : 'Enter Callsign'}
+            label={mode === 'callsign' ?'Enter Callsign': 'Enter Registration or Hex'}
             value={query}
             onChange={(e) => setQuery(e.target.value.toUpperCase())}
             autoFocus

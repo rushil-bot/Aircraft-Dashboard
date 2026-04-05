@@ -12,7 +12,7 @@ CACHE_TTL = 60 * 10  # cache for 10 minutes
 def home():
     return render_template("home.html")
 
-@app.route("/api/aircraft_lookup", methods=["GET"])
+@app.route("/aircraft_lookup", methods=["GET"])
 def aircraft_lookup():
     reg = request.args.get("registration", "").strip().upper()
     callsign = request.args.get("callsign", "").strip().upper()
@@ -47,7 +47,7 @@ def aircraft_lookup():
         return jsonify({"error": "Lookup failed", "details": str(e)}), 500
 
 
-@app.route("/api/airport_lookup", methods=["GET"])
+@app.route("/airport_lookup", methods=["GET"])
 def airport_lookup():
     code = request.args.get("code", "").strip().upper()
     if not code:

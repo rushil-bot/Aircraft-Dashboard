@@ -1,7 +1,6 @@
 {
   "name": "aircraft-app-frontend",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -18,6 +17,10 @@
     "react-router-dom": "^7.8.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
+  },
+  "overrides": {
+    "nth-check": "2.1.1",
+    "postcss": "8.4.31"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -42,5 +45,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "http-proxy-middleware": "^3.0.5"
   }
 }
