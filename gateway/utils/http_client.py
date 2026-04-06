@@ -16,7 +16,7 @@ class HTTPClient:
     def get_client(cls) -> httpx.AsyncClient:
         """Retrieve the active async HTTP Client."""
         if cls._client is None or cls._client.is_closed:
-            cls._client = httpx.AsyncClient(timeout=15.0)
+            cls._client = httpx.AsyncClient(timeout=120.0)
         return cls._client
 
     @classmethod

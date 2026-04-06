@@ -40,3 +40,24 @@ class AgentProxyService:
                 status_code=503,
                 detail="The requested AI Agent service is currently unavailable.",
             ) from e
+
+    @staticmethod
+    async def stream_agent(agent_url: str, payload: dict):
+        """Generic proxy method to stream responses from an internal agent."""
+        client = HTTPClient.get_client()
+        try:
+            async with client.stream("POST", agent_url, json=payload) as response:
+                if response.status_code >= 400:
+                    await response.aread()
+                    raise HTTPException(
+                        status_code=response.status_code, detail=response.text
+                    )
+
+                async for chunk in response.aiter_text():
+                    yield chunk
+        except httpx.RequestError as e:
+            logger.error("Failed to stream from AI Agent at %s: %s", agent_url, e)
+            raise HTTPException(
+                status_code=503,
+                detail="The requested streaming AI Agent service is currently unavailable.",
+            ) from e

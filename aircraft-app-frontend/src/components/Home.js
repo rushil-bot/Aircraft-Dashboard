@@ -27,6 +27,9 @@ export default function Home() {
           <Link to="/delay" style={{...navLinkStyle, color: "#70B5F9"}}>
             Delay Predictor ✈️
           </Link>
+          <Link to="/chat" style={{...navLinkStyle, color: "#38bdf8", fontWeight: "bold"}}>
+            FAA AI Agent 💬
+          </Link>
         </div>
       </nav>
 
@@ -73,6 +76,9 @@ export default function Home() {
         <div style={{ display: "flex", justifyContent: "center", gap: "2rem",marginBottom: "1rem", marginTop: "2rem" }}>
           <Link to="/delay" style={{...buttonStyle, backgroundColor: "#00326B"}}>
             🤖 AI Delay Predictor
+          </Link>
+          <Link to="/chat" style={{...buttonStyle, backgroundColor: "#0284c7"}}>
+            💬 FAA AI Agent
           </Link>
         </div>
       </main>

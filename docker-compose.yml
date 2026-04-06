@@ -105,11 +105,46 @@ services:
   # image-classifier:
   #   build: ./agents/image-classifier
   #   ports: ["8002:8002"]
-  #
-  # nl-query:
-  #   build: ./agents/nl-query
-  #   ports: ["8003:8003"]
-  #
+
+  # ----------------------------------------------------------
+  # Phase 4 AI Agents & Infrastructure (RAG + Local LLM)
+  # ----------------------------------------------------------
+  nl-query:
+    build:
+      context: ./agents/nl-query
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      - CHROMA_HOST=chromadb
+      - OLLAMA_HOST=ollama
+    depends_on:
+      - chromadb
+      - ollama
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma:0.5.23
+    ports:
+      - "8005:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - app-network
+    restart: unless-stopped
+
   # route-recommender:
   #   build: ./agents/route-recommender
   #   ports: ["8004:8004"]
@@ -118,6 +153,8 @@ services:
 # Named volumes
 volumes:
   postgres-data:
+  chroma-data:
+  ollama-data:
 
 # Shared network
 networks:
