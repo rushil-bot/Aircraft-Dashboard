@@ -37,3 +37,6 @@ data/
 # Virtual environments
 venv/
 .venv/
+
+# Local Reports
+*report.txt
