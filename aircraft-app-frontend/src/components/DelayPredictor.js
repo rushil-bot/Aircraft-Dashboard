@@ -16,6 +16,29 @@ import {
   CircularProgress
 } from "@mui/material";
 
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 3958.8; // Earth radius in miles
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return Math.round(2 * R * Math.asin(Math.sqrt(a)));
+}
+
+async function fetchAirportCoords(code) {
+  const res = await fetch(`/api/airport_lookup?code=${encodeURIComponent(code)}`);
+  if (!res.ok) throw new Error(`Airport lookup failed for ${code}`);
+  const data = await res.json();
+  const airport = data.response || data;
+  const lat = parseFloat(airport.latitude);
+  const lon = parseFloat(airport.longitude);
+  if (isNaN(lat) || isNaN(lon)) throw new Error(`No coordinates found for ${code}`);
+  return { lat, lon };
+}
+
 export default function DelayPredictor() {
   const [formData, setFormData] = useState({
     month: new Date().getMonth() + 1,
@@ -23,8 +46,7 @@ export default function DelayPredictor() {
     dep_hour: new Date().getHours(),
     reporting_airline: "",
     origin: "",
-    dest: "",
-    distance: ""
+    dest: ""
   });
 
   const [loading, setLoading] = useState(false);
@@ -46,13 +68,32 @@ export default function DelayPredictor() {
     setResult(null);
 
     // Basic validation
-    if (!formData.reporting_airline || !formData.origin || !formData.dest || !formData.distance) {
+    if (!formData.reporting_airline || !formData.origin || !formData.dest) {
       setError("Please fill out all fields.");
       setLoading(false);
       return;
     }
 
     try {
+      const origin = formData.origin.trim().toUpperCase();
+      const dest = formData.dest.trim().toUpperCase();
+
+      let distance;
+      try {
+        const [originCoords, destCoords] = await Promise.all([
+          fetchAirportCoords(origin),
+          fetchAirportCoords(dest)
+        ]);
+        distance = haversineDistance(
+          originCoords.lat, originCoords.lon,
+          destCoords.lat, destCoords.lon
+        );
+      } catch (err) {
+        setError(`Could not calculate route distance: ${err.message}. Check your airport codes.`);
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch("/api/agents/delay-predictor/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,9 +102,9 @@ export default function DelayPredictor() {
           day_of_week: parseInt(formData.day_of_week),
           dep_hour: parseInt(formData.dep_hour),
           reporting_airline: formData.reporting_airline.trim().toUpperCase(),
-          origin:  formData.origin.trim().toUpperCase(),
-          dest: formData.dest.trim().toUpperCase(),
-          distance: parseInt(formData.distance)
+          origin,
+          dest,
+          distance
         })
       });
 
@@ -172,17 +213,6 @@ export default function DelayPredictor() {
                     value={formData.reporting_airline}
                     onChange={handleChange}
                     placeholder="UA"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Flight Distance (miles)"
-                    name="distance"
-                    type="number"
-                    value={formData.distance}
-                    onChange={handleChange}
-                    placeholder="2586"
                   />
                 </Grid>
 

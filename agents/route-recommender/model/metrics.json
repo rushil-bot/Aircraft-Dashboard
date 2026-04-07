@@ -1,0 +1,6 @@
+{
+  "accuracy": 0.6368374196576045,
+  "roc_auc": 0.6900684568784772,
+  "training_time_seconds": 27.38516855239868,
+  "records_trained_on": 6955229
+}

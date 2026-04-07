@@ -26,7 +26,12 @@ aircraft-app-frontend/.env
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
 temp/
+
+# Logs
+*.log
+logs/
 
 # Docker
 docker-compose.override.yml

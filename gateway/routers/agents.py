@@ -31,3 +31,14 @@ async def proxy_nl_query(req_body: dict):
     return StreamingResponse(
         AgentProxyService.stream_agent(url, req_body), media_type="text/event-stream"
     )
+
+
+@router.post("/route-recommender/recommend")
+async def proxy_route_recommender(req_body: dict):
+    """
+    Proxy request to the internal route-recommender microservice.
+    Returns ranked route options as a JSON response.
+    """
+    agent_host = os.environ.get("ROUTE_RECOMMENDER_HOST", "route-recommender")
+    url = f"http://{agent_host}:8004/recommend"
+    return await AgentProxyService.request_agent(url, req_body)

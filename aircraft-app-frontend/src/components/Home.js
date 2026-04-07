@@ -30,6 +30,9 @@ export default function Home() {
           <Link to="/chat" style={{...navLinkStyle, color: "#38bdf8", fontWeight: "bold"}}>
             FAA AI Agent 💬
           </Link>
+          <Link to="/routes" style={{...navLinkStyle, color: "#a78bfa", fontWeight: "bold"}}>
+            Route Recommender
+          </Link>
         </div>
       </nav>
 
@@ -79,6 +82,9 @@ export default function Home() {
           </Link>
           <Link to="/chat" style={{...buttonStyle, backgroundColor: "#0284c7"}}>
             💬 FAA AI Agent
+          </Link>
+          <Link to="/routes" style={{...buttonStyle, backgroundColor: "#6d28d9"}}>
+            Route Recommender
           </Link>
         </div>
       </main>
