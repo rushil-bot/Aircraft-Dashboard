@@ -145,10 +145,18 @@ services:
       - app-network
     restart: unless-stopped
 
-  # route-recommender:
-  #   build: ./agents/route-recommender
-  #   ports: ["8004:8004"]
   # ----------------------------------------------------------
+  # Phase 5 — Route Recommender (LightGBM)
+  # ----------------------------------------------------------
+  route-recommender:
+    build:
+      context: ./agents/route-recommender
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    networks:
+      - app-network
+    restart: unless-stopped
 
 # Named volumes
 volumes:

@@ -45,8 +45,11 @@ class AgentProxyService:
     async def stream_agent(agent_url: str, payload: dict):
         """Generic proxy method to stream responses from an internal agent."""
         client = HTTPClient.get_client()
+        stream_timeout = httpx.Timeout(connect=10.0, read=300.0, write=10.0, pool=10.0)
         try:
-            async with client.stream("POST", agent_url, json=payload) as response:
+            async with client.stream(
+                "POST", agent_url, json=payload, timeout=stream_timeout
+            ) as response:
                 if response.status_code >= 400:
                     await response.aread()
                     raise HTTPException(

@@ -8,6 +8,7 @@ import AircraftLookup from './components/AircraftLookup';
 import AirportLookup from './components/AirportLookup';
 import DelayPredictor from './components/DelayPredictor';
 import AIAgentChat from './components/AIAgentChat';
+import RouteRecommender from './components/RouteRecommender';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
         <Route path="/airport" element={<AirportLookup />} />
         <Route path="/delay" element={<DelayPredictor />} />
         <Route path="/chat" element={<AIAgentChat />} />
-        
+        <Route path="/routes" element={<RouteRecommender />} />
       </Routes>
     </Router>
   );

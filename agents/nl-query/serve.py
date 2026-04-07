@@ -64,13 +64,13 @@ class QueryRequest(BaseModel):
     """Data model representing an incoming query."""
 
     query: str
-    model: str = "llama3"
+    model: str = "qwen2.5:14b"
 
 
 # Template enforcing strict grounding in the provided context
-RAG_TEMPLATE = """You are a highly professional aviation data assistant.
+RAG_TEMPLATE = """You are a highly professional aviation data assistant. Always respond in English.
 Use the following pieces of retrieved context from official FAA and aviation documents to answer the question.
-If the information is not present in the context, state that the data is not available. Do not infer answers absent from context.
+Provide a clear, well-structured answer. If the information is not present in the context, state that the data is not available in the current knowledge base. Do not infer or fabricate answers absent from the context.
 
 Context:
 {context}
@@ -78,7 +78,7 @@ Context:
 Question:
 {question}
 
-Answer:"""
+Answer (in English):"""
 
 prompt_template = PromptTemplate(
     input_variables=["context", "question"],
@@ -95,7 +95,7 @@ async def generate_response_stream(
         return
 
     # 1. Retrieve context
-    docs = vectorstore.similarity_search(query, k=3)
+    docs = vectorstore.similarity_search(query, k=5)
     context_text = "\n\n".join([doc.page_content for doc in docs])
 
     logger.info("Retrieved %d context chunks for query: '%s'", len(docs), query)

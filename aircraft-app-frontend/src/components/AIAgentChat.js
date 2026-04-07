@@ -30,7 +30,7 @@ export default function AIAgentChat() {
       const response = await fetch('/api/agents/nl-query/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: userMessage.content })
+        body: JSON.stringify({ query: userMessage.content, model: 'qwen2.5:14b' })
       });
 
       if (!response.ok) {
