@@ -6,6 +6,8 @@ based on predicted delay probability for all viable airline/hour
 combinations on a given origin-destination pair.
 """
 
+# pylint: disable=duplicate-code
+
 import json
 from contextlib import asynccontextmanager
 from pathlib import Path

@@ -45,3 +45,7 @@ venv/
 
 # Local Reports
 *report.txt
+
+# Helpers
+
+.claude/

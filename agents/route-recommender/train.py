@@ -12,6 +12,8 @@ Produces five artifacts in the model/ directory:
     metrics.json             - Training and evaluation metrics
 """
 
+# pylint: disable=duplicate-code
+
 import argparse
 import json
 import time
@@ -43,7 +45,7 @@ MODEL_DIR.mkdir(parents=True, exist_ok=True)
 # ---------------------------------------------------------------------------
 # Training Pipeline
 # ---------------------------------------------------------------------------
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals,too-many-statements
 def train_model(data_path: Path, output_dir: Path) -> None:
     """
     Load preprocessed flight data, build a route index, encode categoricals,
@@ -71,9 +73,7 @@ def train_model(data_path: Path, output_dir: Path) -> None:
     for (origin, dest), group in df.groupby(["Origin", "Dest"]):
         key = f"{origin}_{dest}"
         route_index[key] = {
-            "airlines": sorted(
-                group["Reporting_Airline"].dropna().unique().tolist()
-            ),
+            "airlines": sorted(group["Reporting_Airline"].dropna().unique().tolist()),
             "distance": int(group["Distance"].median()),
         }
 

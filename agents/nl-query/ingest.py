@@ -70,13 +70,9 @@ def ingest_pdf(url: str):
         documents = loader.load()
         logger.info("Successfully extracted %d pages.", len(documents))
 
-        # We only take the first 10 pages for demonstration speed,
-        # but in production you would parse the entire document.
-        documents = documents[:10]
-
         logger.info("Splitting text into semantically meaningful chunks...")
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", ".", " ", ""]
+            chunk_size=1500, chunk_overlap=300, separators=["\n\n", "\n", ".", " ", ""]
         )
         chunks = text_splitter.split_documents(documents)
         logger.info("Created %d chunks.", len(chunks))
