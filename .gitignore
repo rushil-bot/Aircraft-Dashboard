@@ -47,5 +47,5 @@ venv/
 *report.txt
 
 # Helpers
-
+CLAUDE.md
 .claude/
